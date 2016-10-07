@@ -46,7 +46,7 @@
             android:layout_marginStart="@dimen/margin_left"
             android:layout_weight="1.51"
             android:contentDescription="@string/rewind_str"
-            app:srcCompat="@drawable/ic_left_rewind" />
+            app:srcCompat="@drawable/bt_left_rewind" />
 
         <ImageButton
             android:id="@+id/ButtonPlayStop"
@@ -56,7 +56,7 @@
             android:layout_weight="2.40"
             android:contentDescription="@string/play_str"
             android:onClick="playAndStop"
-            app:srcCompat="@drawable/ic_play" />
+            app:srcCompat="@drawable/bt_play" />
 
         <ImageButton
             android:id="@+id/RewindRightButton"
@@ -65,7 +65,7 @@
             android:layout_marginStart="@dimen/margin_left"
             android:layout_weight="1"
             android:contentDescription="@string/rewind_str"
-            app:srcCompat="@drawable/ic_right_rewind" />
+            app:srcCompat="@drawable/bt_right_rewind" />
 
         <ImageButton
             android:id="@+id/PlaylistButton"
@@ -74,7 +74,7 @@
             android:layout_marginStart="@dimen/margin_left"
             android:layout_weight="1"
             android:contentDescription="@string/playlist_str"
-            app:srcCompat="@drawable/ic_list" />
+            app:srcCompat="@drawable/bt_list" />
 
     </LinearLayout>
 

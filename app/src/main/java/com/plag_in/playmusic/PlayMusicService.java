@@ -4,8 +4,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-public class PlayMusic extends Service {
-    public PlayMusic() {
+public class PlayMusicService extends Service {
+    public PlayMusicService() {
     }
 
     @Override

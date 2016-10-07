@@ -1,17 +1,21 @@
 package com.plag_in.playmusic;
 
+import android.app.Activity;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 
-public class MainActivity extends AppCompatActivity {
+import java.io.IOException;
 
-    private Button buttonPlayStop;
+public class MainActivity extends Activity {
+
+    private ImageButton buttonPlayStop;
     private MediaPlayer mediaPlayer;
     private SeekBar seekBar;
 
@@ -21,13 +25,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initViews();
+        try {
+            initViews();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void initViews() {
-        buttonPlayStop = (Button) findViewById(R.id.ButtonPlayStop);
-        //mediaPlayer = MediaPlayer.create(this, R.raw.imagine_dragons_radioactive);
-
+    private void initViews() throws IOException {
+        buttonPlayStop = (ImageButton) findViewById(R.id.ButtonPlayStop);
+        buttonPlayStop.setImageResource(R.drawable.ic_play);
+        Uri myUri = Uri.parse("file:///sdcard/");
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setDataSource(getApplicationContext(), myUri);
+        //mediaPlayer = MediaPlayer.create(this, R..imagine_dragons_radioactive);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         seekBar.setMax(mediaPlayer.getDuration());
         seekBar.setOnTouchListener(new View.OnTouchListener() {
@@ -47,8 +58,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void playAndStop(View v){
-        if (buttonPlayStop.getText() == getString(R.string.play_str)) {
-            buttonPlayStop.setText(getString(R.string.pause_str));
+        if (!mediaPlayer.isPlaying()) {
+            buttonPlayStop.setImageResource(R.drawable.ic_play);
             try{
                 mediaPlayer.start();
                 startPlayProgressUpdater();
@@ -56,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.pause();
             }
         }else {
-            buttonPlayStop.setText(getString(R.string.play_str));
+            buttonPlayStop.setImageResource(R.drawable.ic_pause);
             mediaPlayer.pause();
         }
     }
@@ -73,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             handler.postDelayed(notification,1000);
         }else{
             mediaPlayer.pause();
-            buttonPlayStop.setText(getString(R.string.play_str));
+            buttonPlayStop.setImageResource(R.drawable.ic_play);
             seekBar.setProgress(0);
         }
     }

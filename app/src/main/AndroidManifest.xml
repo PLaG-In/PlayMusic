@@ -19,9 +19,13 @@
         </activity>
 
         <service
-            android:name=".PlayMusic"
+            android:name=".PlayMusicService"
             android:enabled="true"
-            android:exported="true">MyService</service>
+            android:exported="true">
+            MyService
+        </service>
+
+        <activity android:name=".PlaylistActivity"></activity>
     </application>
 
 </manifest>

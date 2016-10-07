@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">PlayMusic</string>
-    <string name="play_str">PLAY</string>
-    <string name="pause_str">PAUSE</string>
+    <string name="play_str">Play</string>
+    <string name="pause_str">Ppause</string>
+    <string name="playlist_str">Playlist</string>
+    <string name="music_theme_str">Current song</string>
+    <string name="rewind_str">Rewind song</string>
 </resources>

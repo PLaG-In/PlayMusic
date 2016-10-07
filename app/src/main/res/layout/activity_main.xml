@@ -26,4 +26,12 @@
         android:layout_gravity="center"
         android:layout_marginRight="-3dp"/>
 
+    <Button
+        android:text="Playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/PlaylistButton"
+        android:textAlignment="center"
+        android:elevation="0dp" />
+
 </LinearLayout>

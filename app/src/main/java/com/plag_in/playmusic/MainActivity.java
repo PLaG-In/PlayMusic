@@ -2,6 +2,7 @@ package com.plag_in.playmusic;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -44,16 +46,13 @@ public class MainActivity extends Activity {
 
     private ArrayList<File> mySongs;
     private int position;
-    // --Commented out by Inspection (30.10.2016 14:32):private boolean isStarted = true;
-    // --Commented out by Inspection (30.10.2016 14:32):private String currentFile = "";
-    // --Commented out by Inspection (30.10.2016 14:33):private boolean isMovingSeekBar = false;
 
-    // --Commented out by Inspection (30.10.2016 14:33):private final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         textView = (TextView) findViewById(R.id.textView);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
@@ -226,6 +225,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        handler.removeCallbacks(updatePositionRunnable);
         mediaPlayer.stop();
         mediaPlayer.reset();
         mediaPlayer.release();

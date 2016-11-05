@@ -11,13 +11,13 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:weightSum="1"
+    android:background="@drawable/bg_skull"
     tools:context="com.plag_in.playmusic.MainActivity">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.04"
+        android:layout_height="22dp"
         android:text="@string/music_theme_str"
         android:textAlignment="center"
         tools:textAlignment="center" />
@@ -25,10 +25,10 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="0.97"
         android:contentDescription="@string/music_theme_str"
-        app:srcCompat="@drawable/ic_launcher" />
+        android:background="@drawable/img_song" />
 
     <SeekBar
         android:id="@+id/seekBar"

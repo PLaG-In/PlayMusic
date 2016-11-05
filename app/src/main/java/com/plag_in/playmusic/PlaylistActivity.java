@@ -1,6 +1,7 @@
 package com.plag_in.playmusic;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class PlaylistActivity extends AppCompatActivity {
@@ -18,20 +20,17 @@ public class PlaylistActivity extends AppCompatActivity {
     ListView lv;
     String[] items;
 
-    final String LOG_TAG = "myLogs";
-    final String DIR_SD = "media";
-    final String FILENAME_SD = "fileSD";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
-        lv = (ListView) findViewById(R.id.lvPlaylist);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        lv = (ListView) findViewById(R.id.lvPlaylist);
         final ArrayList<File> mySongs = findSongs(Environment.getExternalStorageDirectory());
         items = new String[mySongs.size()];
         for (int i = 0; i < mySongs.size(); i++) {
-            //toast(mySongs.get(i).getName().toString());
             items[i] = mySongs.get(i).getName().replace(".mp3", "").replace(".wav", "");
         }
 
@@ -45,23 +44,10 @@ public class PlaylistActivity extends AppCompatActivity {
                 intent.putExtra("pos", position).putExtra("playlist", mySongs);
                 setResult(RESULT_OK, intent);
                 finish();
-                /*startActivity(new Intent(getApplicationContext(),
-                        MainActivity.class).putExtra("pos", position).putExtra("playlist", mySongs));*/
             }
         });
     }
 
-    /*protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) {return;}
-        Intent intentF = new Intent();
-        setResult(RESULT_OK,intentF);
-        finish();
-    }*/
-
-   /* public void toast(String text) {
-        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-    }*/
 
     public ArrayList<File> findSongs(File root) {
         ArrayList<File> al = new ArrayList<>();

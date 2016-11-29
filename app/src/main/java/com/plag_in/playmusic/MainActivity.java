@@ -3,21 +3,16 @@ package com.plag_in.playmusic;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+
 
 public class MainActivity extends Activity {
 
@@ -26,15 +21,14 @@ public class MainActivity extends Activity {
 
     private ImageButton prevButton;
     private ImageButton nextButton;
-    private boolean firstOpen = true;
-    private boolean isMovingSeekBar = false;
     private ImageButton buttonPlayStop;
     private ImageButton buttonPlaylist ;
-    private static MediaPlayer mediaPlayer = null;
+    private ImageButton buttonStop;
+    private boolean firstOpen = true;
+    private boolean isMovingSeekBar = false;
+    //private static MediaPlayer mediaPlayer = null;
     private TextView textView = null;
     private SeekBar seekBar = null;
-
-   // private Thread updateSeekBar;
 
     private final Handler handler = new Handler();
 
@@ -60,69 +54,30 @@ public class MainActivity extends Activity {
         prevButton = (ImageButton) findViewById(R.id.RewindLeftButton);
         nextButton = (ImageButton) findViewById(R.id.RewindRightButton);
         buttonPlaylist = (ImageButton) findViewById(R.id.PlaylistButton);
+        buttonStop = (ImageButton) findViewById(R.id.StopButton);
 
         buttonPlayStop.setImageResource(R.drawable.bt_play);
         nextButton.setImageResource(R.drawable.bt_right_rewind);
         prevButton.setImageResource(R.drawable.bt_left_rewind);
         buttonPlaylist.setImageResource(R.drawable.bt_list);
+        buttonStop.setImageResource(R.drawable.bt_stop_song);
 
-        /*updateSeekBar = new Thread() {
-            @Override
-            public void run() {
-                int totalDuration = mediaPlayer.getDuration();
-                int currentPosition = 0;
-                seekBar.setMax(totalDuration);
-                while (currentPosition < totalDuration) {
-                    try {
-                        sleep(500);
-                        currentPosition = mediaPlayer.getCurrentPosition();
-                        seekBar.setProgress(currentPosition);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };*/
         buttonPlaylist.setOnClickListener(onButtonClick);
 
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-        }
-
+        buttonStop.setOnClickListener(onButtonClick);
         nextButton.setLongClickable(true);
         prevButton.setLongClickable(true);
         //prevButton.setOnLongClickListener((View.OnLongClickListener) this);
         seekBar.setOnSeekBarChangeListener(seekBarChanged);
-        /*seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                mediaPlayer.seekTo(seekBar.getProgress());
-            }
-        });*/
     }
 
     private void chooseSong(){
         seekBar.setProgress(0);
-        assert mySongs != null;
-        String song = mySongs.get(position).toString();
-        Uri uri = Uri.parse(song);
 
         String songName = mySongs.get(position).getName().replace(".mp3", "").replace(".wav", "");
         textView.setText(songName);
 
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-        seekBar.setMax(mediaPlayer.getDuration());
+        seekBar.setMax(PlayMusicService.getDuration());
     }
 
 
@@ -136,23 +91,20 @@ public class MainActivity extends Activity {
             buttonPlayStop.setOnClickListener(onButtonClick);
             nextButton.setOnClickListener(onButtonClick);
             prevButton.setOnClickListener(onButtonClick);
+            buttonStop.setOnClickListener(onButtonClick);
             firstOpen = false;
-        }else{
-            mediaPlayer.stop();
-            mediaPlayer.reset();
         }
 
         position = data.getIntExtra("pos", 0);
         chooseSong();
         updatePosition();
-        mediaPlayer.start();
     }
 
 
     private void updatePosition() {
         handler.removeCallbacks(updatePositionRunnable);
 
-        seekBar.setProgress(mediaPlayer.getCurrentPosition());
+        seekBar.setProgress(PlayMusicService.getProgress());
 
         handler.postDelayed(updatePositionRunnable, UPDATE_FREQUENCY);
     }
@@ -165,20 +117,23 @@ public class MainActivity extends Activity {
             int id = v.getId();
             switch (id) {
                 case R.id.ButtonPlayStop:
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
+                    if (PlayMusicService.isPlaying()) {
+                        PlayMusicService.Pause();
                         buttonPlayStop.setImageResource(R.drawable.bt_play);
                     } else {
-                        mediaPlayer.start();
-                        //updateSeekBar.start();
+                        PlayMusicService.Play();
                         buttonPlayStop.setImageResource(R.drawable.bt_pause);
                     }
                     break;
                 case R.id.RewindRightButton:
-                    mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + STEP_VALUE);
+                    PlayMusicService.seekToRight(STEP_VALUE);
                     break;
                 case R.id.RewindLeftButton:
-                    mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - STEP_VALUE);
+                    PlayMusicService.seekToLeft(STEP_VALUE);
+                    break;
+                case R.id.StopButton:
+                    stopService(
+                            new Intent(MainActivity.this, PlayMusicService.class));
                     break;
                 case R.id.PlaylistButton:
                     Intent intent = new Intent(MainActivity.this, PlaylistActivity.class);
@@ -203,20 +158,18 @@ public class MainActivity extends Activity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (isMovingSeekBar) {
-                mediaPlayer.seekTo(progress);
+                PlayMusicService.seekTo(progress);
             }
-            if (seekBar.getMax() == mediaPlayer.getCurrentPosition()){
+            if (seekBar.getMax() == PlayMusicService.getProgress()){
                 if (position != mySongs.size()){
                     position += 1;
                     seekBar.setProgress(0);
+                    PlayMusicService.nextSong(position);
+
                 }else{
                     position = 0;
                 }
-                mediaPlayer.stop();
-                mediaPlayer.reset();
-
                 chooseSong();
-                mediaPlayer.start();
             }
         }
     };
@@ -227,10 +180,5 @@ public class MainActivity extends Activity {
         super.onDestroy();
 
         handler.removeCallbacks(updatePositionRunnable);
-        mediaPlayer.stop();
-        mediaPlayer.reset();
-        mediaPlayer.release();
-
-        mediaPlayer = null;
     }
 }
